@@ -74,7 +74,8 @@ namespace ETicaretAPI.API.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             await _productWriteRepository.RemoveAsync(id);
-            return StatusCode((int)HttpStatusCode.OK);
+            await _productWriteRepository.SaveAsync();
+            return Ok(); 
         }
 
     }

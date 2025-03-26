@@ -43,19 +43,43 @@ namespace ETicaretAPI.Infrastructure.Services
                 : nameWithoutExtension;
 
             string newFileName = $"{baseFileName}{extension}";
+            string fullPath = Path.Combine(path, newFileName);
 
-            if (!File.Exists($"{path}\\{newFileName}"))
+            if (!File.Exists(fullPath))
                 return newFileName;
 
-            int counter = 2;
-            while (true)
-            {
-                newFileName = $"{baseFileName}-{counter}{extension}";
-                if (!File.Exists($"{path}\\{newFileName}"))
-                    return newFileName;
+            string searchPattern = $"{baseFileName}*{extension}";
+            var files = Directory.GetFiles(path, searchPattern);
 
-                counter++;
+            int maxNumber = 1;
+            foreach (var file in files)
+            {
+                string currentFileName = Path.GetFileNameWithoutExtension(file);
+
+                if (currentFileName.Equals(baseFileName, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (currentFileName.StartsWith($"{baseFileName}-", StringComparison.OrdinalIgnoreCase))
+                {
+                    string suffix = currentFileName.Substring(baseFileName.Length + 1);
+                    if (int.TryParse(suffix, out int number))
+                    {
+                        if (number > maxNumber)
+                            maxNumber = number;
+                    }
+                }
             }
+
+            // Yeni dosya ismi, bulunan en yüksek numaradan 1 fazlası olacak
+            int counter = maxNumber + 1;
+            newFileName = $"{baseFileName}-{counter}{extension}";
+            while (File.Exists(Path.Combine(path, newFileName)))
+            {
+                counter++;
+                newFileName = $"{baseFileName}-{counter}{extension}";
+            }
+
+            return newFileName;
         }
 
         public async Task<List<(string fileName, string path)>> UploadAsync(string path, IFormFileCollection files)

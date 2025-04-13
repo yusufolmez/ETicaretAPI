@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace ETicaretAPI.Infrastructure.Services.Storage.Azure
 {
-    public class AzureStorage : IAzureStorage
+    public class AzureStorage : Storage, IAzureStorage
     {
         readonly BlobServiceClient _blobServiceClient;
         BlobContainerClient _blobContainerClient;
@@ -47,10 +47,12 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Azure
             List<(string fileName, string pathOrContainerName)> datas = new();
             foreach (IFormFile file in files)
             {
-                BlobClient blobClient = _blobContainerClient.GetBlobClient(file.FileName);
+                string fileNewName = await FileRenameAsync(containerName, file.FileName, HasFile);
+
+                BlobClient blobClient = _blobContainerClient.GetBlobClient(fileNewName);
                 await blobClient.UploadAsync(file.OpenReadStream(), overwrite: true);
 
-                datas.Add((file.FileName, containerName));
+                datas.Add((fileNewName, containerName));
             }
             return datas;
         }

@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /Presentation/ETicaretAPI.API/wwwroot/resources/
 /Presentation/ETicaretAPI.API/wwwroot/filestest
+
+**/appsettings*.json

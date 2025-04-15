@@ -1,11 +1,12 @@
 using System.Globalization;
 using System.Net;
 using ETicaretAPI.Application.Abstractions.Storage;
+using ETicaretAPI.Application.Features.Queries.GetAllProduct;
 using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Application.RequestParameters;
-using ETicaretAPI.Application.Servıces;
 using ETicaretAPI.Application.ViewModels.Products;
 using ETicaretAPI.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ namespace ETicaretAPI.API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        readonly private IProductReadReadRepository _productReadRepository;
+        readonly private IProductReadRepository _productReadRepository;
         readonly private IProductWriteRepository _productWriteRepository;
         readonly private IWebHostEnvironment _webHostEnvironment;
         readonly IFileWriteRepository _fileWriteRepository;
@@ -28,7 +29,11 @@ namespace ETicaretAPI.API.Controllers
         readonly IStorageService _storageService;
         readonly IConfiguration configuration;
 
-        public ProductsController(IProductReadReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IWebHostEnvironment webHostEnvironment, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IStorageService storageService, IConfiguration configuration)
+
+
+        readonly IMediator _mediator;
+
+        public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IWebHostEnvironment webHostEnvironment, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IProductImageFileReadRepository productImageFileReadRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IStorageService storageService, IConfiguration configuration, IMediator mediator)
         {
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
@@ -41,23 +46,14 @@ namespace ETicaretAPI.API.Controllers
             _invoiceFileReadRepository = invoiceFileReadRepository;
             _storageService = storageService;
             this.configuration = configuration;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]Pagination pagination)
+        public async Task<IActionResult> Get([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
-            var totalCount = _productReadRepository.GetAll(false).Count();
-            var products = _productReadRepository.GetAll(false).Skip(pagination.Page * pagination.Size).Take(pagination.Size).Select(p => new
-            {
-                p.Id,
-                p.Name,
-                p.Stock,
-                p.Price,
-                p.CreatedDate,
-                p.UpdatedDate
-            }).ToList();
-
-            return Ok(new {totalCount,products});
+            GetAllProductQueryResponse response = await _mediator.Send(getAllProductQueryRequest);
+            return Ok(response);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)

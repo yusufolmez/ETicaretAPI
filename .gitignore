@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /Presentation/ETicaretAPI.API/wwwroot/filestest
 
 **/appsettings*.json
+/Presentation/ETicaretAPI.API/appsettings.json

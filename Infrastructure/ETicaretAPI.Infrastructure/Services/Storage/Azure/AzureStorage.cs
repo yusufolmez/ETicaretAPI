@@ -40,18 +40,17 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Azure
 
         public async Task<List<(string fileName, string pathOrContainerName)>> UploadAsync(string containerName, IFormFileCollection files)
         {
-
-            string sasUrl = $"https://eticaretyusuf.blob.core.windows.net/{containerName}?sv=2024-11-04&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-05-09T23:10:49Z&st=2025-04-13T15:10:49Z&spr=https&sig=fxrKL3%2BA5GICGRTYbDY4UyKmwq1ANwYuhpyDE41GUBs%3D";
-            _blobContainerClient = new BlobContainerClient(new Uri(sasUrl));
+            _blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             await _blobContainerClient.CreateIfNotExistsAsync();
+            await _blobContainerClient.SetAccessPolicyAsync(PublicAccessType.BlobContainer);
+
             List<(string fileName, string pathOrContainerName)> datas = new();
             foreach (IFormFile file in files)
             {
                 string fileNewName = await FileRenameAsync(containerName, file.FileName, HasFile);
 
                 BlobClient blobClient = _blobContainerClient.GetBlobClient(fileNewName);
-                await blobClient.UploadAsync(file.OpenReadStream(), overwrite: true);
-
+                await blobClient.UploadAsync(file.OpenReadStream());
                 datas.Add((fileNewName, $"{containerName}/{fileNewName}"));
             }
             return datas;

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ETicaretAPI.Persistance.Migrations
 {
     [DbContext(typeof(ETicaretAPIDBContext))]
-    [Migration("20250413210001_mig1")]
+    [Migration("20250413215104_mig1")]
     partial class mig1
     {
         /// <inheritdoc />

@@ -4,6 +4,7 @@ using ETicaretAPI.Application.Abstractions.Storage;
 using ETicaretAPI.Application.Features.Commands.Product.CreateProduct;
 using ETicaretAPI.Application.Features.Commands.Product.RemoveProduct;
 using ETicaretAPI.Application.Features.Commands.Product.UpdateProduct;
+using ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProductImage;
 using ETicaretAPI.Application.Features.Queries.Product.GetAllProduct;
 using ETicaretAPI.Application.Features.Queries.Product.GetByIdProduct;
 using ETicaretAPI.Application.Repositories;
@@ -54,13 +55,13 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]GetAllProductQueryRequest getAllProductQueryRequest)
+        public async Task<IActionResult> Get([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
             GetAllProductQueryResponse response = await _mediator.Send(getAllProductQueryRequest);
             return Ok(response);
         }
         [HttpGet("{Id}")]
-        public async Task<IActionResult> Get([FromRoute]GetByIdProductQueryRequest getByIdProductQueryRequest)
+        public async Task<IActionResult> Get([FromRoute] GetByIdProductQueryRequest getByIdProductQueryRequest)
         {
             GetByIdProductQueryResponse response = await _mediator.Send(getByIdProductQueryRequest);
             return Ok(response);
@@ -72,36 +73,27 @@ namespace ETicaretAPI.API.Controllers
             return StatusCode((int)HttpStatusCode.Created);
         }
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]UpdateProductCommandRequest updateProductCommandRequest)
+        public async Task<IActionResult> Put([FromBody] UpdateProductCommandRequest updateProductCommandRequest)
         {
             UpdateProductCommandResponse response = await _mediator.Send(updateProductCommandRequest);
             return Ok();
         }
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete([FromRoute]RemoveProductCommandRequest removeProductCommandRequest)
+        public async Task<IActionResult> Delete([FromRoute] RemoveProductCommandRequest removeProductCommandRequest)
         {
             RemoveProductCommandResponse response = await _mediator.Send(removeProductCommandRequest);
             return Ok(response);
         }
-        [HttpPost("[action]")] //...com/api/products?id=123/
-        public async Task<IActionResult> Upload(string id)
+        [HttpPost("{id}/images")] 
+        public async Task<IActionResult> Upload(string id, [FromForm] IFormFileCollection files)
         {
-            List<(string fileName, string pathOrContainerName)> result = await
-                _storageService.UploadAsync("productimages", Request.Form.Files);
-
-            Product product = await _productReadRepository.GetByIdAsync(id);
-
-            await _productImageFileWriteRepository.AddRangeAsync(result.Select(r => new ProductImageFile
+            var command = new UploadProductImageCommandRequest
             {
-                FileName = r.fileName,
-                Path = r.pathOrContainerName,
-                Storage = _storageService.StorageName,
-                Products = new List<Product>() { product }
-            }).ToList());
-
-            await _productImageFileWriteRepository.SaveAsync();
-
-            return Ok();
+                ProductId = id,
+                Files = files
+            };
+            UploadProductImageCommandResponse response = await _mediator.Send(command);
+            return Ok(response);
         }
         [HttpGet("[action]/{id}")] //...com/api/products/id=123/
         public async Task<IActionResult> GetProductImages(String id)

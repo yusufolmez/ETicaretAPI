@@ -8,5 +8,9 @@ namespace ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProdu
 {
     public class UploadProductImageCommandResponse
     {
+        public bool Succeeded { get; set; }
+        public string Message { get; set; }
+        public List<string> UploadedFileNames { get; set; } = new();
+        public List<string> Errors { get; set; } = new();
     }
 }

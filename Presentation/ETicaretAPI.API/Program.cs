@@ -1,4 +1,5 @@
 using ETicaretAPI.Application;
+using ETicaretAPI.Application.Validators.ProductImageFile;
 using ETicaretAPI.Application.Validators.Products;
 using ETicaretAPI.Infrastructure;
 using ETicaretAPI.Infrastructure.Filters;
@@ -22,6 +23,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 
 builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
     .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>())
+    .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<FileValidator>())
+    .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<UploadProductImageCommandValidator>())
     .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
     
 

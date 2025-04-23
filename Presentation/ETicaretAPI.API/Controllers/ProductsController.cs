@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using System.Net;
 using ETicaretAPI.Application.Abstractions.Storage;
-using ETicaretAPI.Application.Features.Commands.CreateProduct;
-using ETicaretAPI.Application.Features.Queries.GetAllProduct;
+using ETicaretAPI.Application.Features.Commands.Product.CreateProduct;
+using ETicaretAPI.Application.Features.Queries.Product.GetAllProduct;
 using ETicaretAPI.Application.Repositories;
 using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Application.ViewModels.Products;

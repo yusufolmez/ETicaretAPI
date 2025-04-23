@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ETicaretAPI.Application.RequestParameters;
 using MediatR;
 
-namespace ETicaretAPI.Application.Features.Queries.GetAllCustomer
+namespace ETicaretAPI.Application.Features.Queries.Customer.GetAllCustomer
 {
     public class GetAllCustomerQueryRequest : IRequest<GetAllCustomerQueryResponse>
     {

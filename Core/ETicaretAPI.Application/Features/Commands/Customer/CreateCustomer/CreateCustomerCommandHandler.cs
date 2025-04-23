@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ETicaretAPI.Application.Repositories;
 using MediatR;
 
-namespace ETicaretAPI.Application.Features.Commands.CreateCustomer
+namespace ETicaretAPI.Application.Features.Commands.Customer.CreateCustomer
 {
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommandRequest, CreateCustomerCommandResponse>
     {

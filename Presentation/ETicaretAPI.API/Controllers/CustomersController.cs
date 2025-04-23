@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using ETicaretAPI.Application.Features.Commands.CreateCustomer;
-using ETicaretAPI.Application.Features.Queries.GetAllCustomer;
+using ETicaretAPI.Application.Features.Commands.Customer.CreateCustomer;
+using ETicaretAPI.Application.Features.Queries.Customer.GetAllCustomer;
 using ETicaretAPI.Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Http;

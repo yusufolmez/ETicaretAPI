@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.Features.Queries.GetAllCustomer
+namespace ETicaretAPI.Application.Features.Queries.Product.GetAllProduct
 {
-    public class GetAllCustomerQueryResponse
+    public class GetAllProductQueryResponse
     {
         public int TotalCount { get; set; }
-        public object Customers { get; set; }
-
+        public object Products { get; set; }
     }
 }

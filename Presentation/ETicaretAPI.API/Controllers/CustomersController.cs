@@ -1,6 +1,9 @@
 ﻿using System.Net;
 using ETicaretAPI.Application.Features.Commands.Customer.CreateCustomer;
+using ETicaretAPI.Application.Features.Commands.Customer.RemoveCustomer;
+using ETicaretAPI.Application.Features.Commands.Customer.UpdateCustomer;
 using ETicaretAPI.Application.Features.Queries.Customer.GetAllCustomer;
+using ETicaretAPI.Application.Features.Queries.Customer.GetByIdCustomer;
 using ETicaretAPI.Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -29,18 +32,31 @@ namespace ETicaretAPI.API.Controllers
             GetAllCustomerQueryResponse response = await _mediator.Send(getAllCustomerQueryRequest);
             return Ok(response);
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
+        [HttpGet("{Id}")]
+        public async Task<IActionResult> Get([FromRoute] GetByIdCustomerQueryRequest getByIdCustomerQueryRequest)
         {
-            var customer = await _customerReadRepository.GetByIdAsync(id);
-            if (customer == null) return NotFound();
-            return Ok(customer);
+            GetByIdCustomerQueryResponse response = await _mediator.Send(getByIdCustomerQueryRequest);
+            if (response == null)
+                return NotFound();
+            return Ok(response);
         }
         [HttpPost]
         public async Task<IActionResult> Post(CreateCustomerCommandRequest createCustomerCommandRequest)
         {
             CreateCustomerCommandResponse response = await _mediator.Send(createCustomerCommandRequest);
             return StatusCode((int)HttpStatusCode.Created);
+        }
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UpdateCustomerCommandRequest updateCustomerCommandRequest)
+        {
+            UpdateCustomerCommandResponse response = await _mediator.Send(updateCustomerCommandRequest);
+            return Ok(response);
+        }
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> Delete([FromRoute] RemoveCustomerCommandRequest removeCustomerCommandRequest)
+        {
+            RemoveCustomerCommandResponse response = await _mediator.Send(removeCustomerCommandRequest);
+            return Ok(response);
         }
     }
 }

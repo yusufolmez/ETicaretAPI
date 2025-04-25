@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ETicaretAPI.Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,19 +22,22 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.CreateUser
         {
             IdentityResult result = await _userManager.CreateAsync(new()
             {
+                Id = Guid.NewGuid().ToString(), 
                 UserName = request.Username,
                 Email = request.Email,
                 NameSurname = request.NameSurname
             }, request.Password);
 
+            CreateUserCommandResponse response = new() { Succeeded = result.Succeeded };
+
             if (result.Succeeded)
-            {
-                return new() {Succeeded = true, Message = "User created successfully"};
-            }
+                response.Message = "Kullanıcı başarıyla oluşturulmuştur.";
             else
-            {
-                return new(){Succeeded = false, Message = string.Join(", ", result.Errors.Select(x => x.Description))};
-            }
+                foreach (var error in result.Errors)
+                    response.Message += $"{error.Code} - {error.Description}\n";
+
+            return response;
+            //throw new UserCreateFailedException();
         }
     }
 }

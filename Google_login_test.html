@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Google Sign-In Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <h1>Google Sign-In Test</h1>
+    <div id="g_id_onload"
+         data-client_id="my-data-client-id"
+         data-callback="handleCredentialResponse"></div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <pre id="token-display"
+         style="margin-top: 20px; word-wrap: break-word"></pre>
+    <div id="response-container"
+         style="
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: none;
+      ">
+        <h3>API Yanıtı:</h3>
+        <pre id="api-response"></pre>
+    </div>
+
+    <script>
+      // JWT'in payload kısmını decode eden yardımcı fonksiyon
+      function parseJwt(token) {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+        return JSON.parse(jsonPayload);
+      }
+
+      function handleCredentialResponse(response) {
+        const idToken = response.credential;
+        document.getElementById("token-display").textContent = idToken;
+        console.log("ID Token:", idToken);
+
+        // JWT payload'tan kullanıcı bilgilerini al
+        const user = parseJwt(idToken);
+        // user.sub → Google subject (benzersiz kullanıcı ID)
+        // user.name → tam ad
+        // user.given_name → ilk ad
+        // user.family_name → soyad
+        // user.email → e-posta
+        // user.picture → profil resmi URL
+
+        const body = {
+          Id: user.sub,
+          IdToken: idToken,
+          Name: user.name,
+          FirstName: user.given_name,
+          LastName: user.family_name,
+          Email: user.email,
+          PhotoUrl: user.picture,
+          Provider: "google",
+        };
+
+        fetch("https://localhost:7078/api/User/google-login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("API Yanıtı:", data);
+            document.getElementById("response-container").style.display =
+              "block";
+            document.getElementById("api-response").textContent =
+              JSON.stringify(data, null, 2);
+          })
+          .catch((error) => {
+            console.error("Hata:", error);
+            document.getElementById("response-container").style.display =
+              "block";
+            document.getElementById("api-response").textContent =
+              "Hata: " + error.message;
+          });
+      }
+    </script>
+</body>
+</html>

@@ -32,7 +32,7 @@ namespace ETicaretAPI.Application.Features.Commands.Product.UpdateProduct
             product.Price = request.Price;
             product.Stock = request.Stock;
             await _productWriteRepository.SaveAsync();
-            _logger.LogInformation($"Product:{request.Id} guncellendi");
+            _logger.LogInformation($"Ürün güncellendi, ID: {request.Id}, Yeni İsim: {request.Name}");
             return new();
         }
     }

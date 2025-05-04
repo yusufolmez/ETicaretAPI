@@ -7,15 +7,18 @@ using System.Threading.Tasks;
 using ETicaretAPI.Application.Repositories;
 using MediatR;
 using O = ETicaretAPI.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ETicaretAPI.Application.Features.Queries.Order.GetAllOrder
 {
     public class GetAllOrdersQueryhandler : IRequestHandler<GetAllOrdersQueryRequest, GetAllOrdersQueryResponse>
     {
         readonly IOrderReadRepository _orderReadRepository;
-        public GetAllOrdersQueryhandler(IOrderReadRepository orderReadRepository)
+        readonly ILogger<GetAllOrdersQueryhandler> _logger;
+        public GetAllOrdersQueryhandler(IOrderReadRepository orderReadRepository, ILogger<GetAllOrdersQueryhandler> logger)
         {
             _orderReadRepository = orderReadRepository;
+            _logger = logger;
         }
         public async Task<GetAllOrdersQueryResponse> Handle(GetAllOrdersQueryRequest request, CancellationToken cancellationToken)
         {
@@ -29,6 +32,7 @@ namespace ETicaretAPI.Application.Features.Queries.Order.GetAllOrder
 
             }).ToList();
 
+            _logger.LogInformation($"Tüm siparişler listelendi, Toplam Sayı: {totalCount}");
             return new()
             {
                 TotalCount = 0,

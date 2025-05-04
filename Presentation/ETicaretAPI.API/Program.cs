@@ -50,6 +50,7 @@ Logger log = new LoggerConfiguration()
         {"log_event", new LogEventSerializedColumnWriter() },
         {"user_name",  new UsernameColumnWriter() }
     } )
+    .WriteTo.Seq(builder.Configuration["Seq:ServerURL"])
     .Enrich.FromLogContext()
     .MinimumLevel.Information()
     .CreateLogger();

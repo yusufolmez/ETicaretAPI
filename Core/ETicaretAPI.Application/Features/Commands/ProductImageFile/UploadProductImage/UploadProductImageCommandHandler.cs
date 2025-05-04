@@ -9,6 +9,7 @@ using ETicaretAPI.Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using P = ETicaretAPI.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProductImage
 {
@@ -17,11 +18,13 @@ namespace ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProdu
         readonly IStorageService _storageService;
         readonly IProductReadRepository _productReadRepository;
         readonly IProductImageFileWriteRepository _productImageFileWriteRepository;
-        public UploadProductImageCommandHandler(IStorageService storageService, IProductReadRepository productReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository)
+        readonly ILogger<UploadProductImageCommandHandler> _logger;
+        public UploadProductImageCommandHandler(IStorageService storageService, IProductReadRepository productReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, ILogger<UploadProductImageCommandHandler> logger)
         {
             _storageService = storageService;
             _productReadRepository = productReadRepository;
             _productImageFileWriteRepository = productImageFileWriteRepository;
+            _logger = logger;
         }
         public async Task<UploadProductImageCommandResponse> Handle(UploadProductImageCommandRequest request, CancellationToken cancellationToken)
         {
@@ -32,6 +35,7 @@ namespace ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProdu
                 P.Product product = await _productReadRepository.GetByIdAsync(request.ProductId);
                 if (product == null)
                 {
+                    _logger.LogError($"Ürün bulunamadı, ID: {request.ProductId}");
                     response.Succeeded = false;
                     response.Message = "Product not found.";
                     return response;
@@ -49,12 +53,14 @@ namespace ETicaretAPI.Application.Features.Commands.ProductImageFile.UploadProdu
 
                 await _productImageFileWriteRepository.SaveAsync();
 
+                _logger.LogInformation($"Ürün resimleri yüklendi, Ürün ID: {request.ProductId}, Dosya Sayısı: {result.Count}");
                 response.Succeeded = true;
                 response.Message = "Files uploaded successfully.";
                 response.UploadedFileNames = result.Select(r => r.fileName).ToList();
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Dosya yükleme hatası, Ürün ID: {request.ProductId}, Hata: {ex.Message}");
                 response.Succeeded = false;
                 response.Message = "An error occurred while uploading files.";
                 response.Errors.Add(ex.Message);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ETicaretAPI.Application.Repositories;
 using MediatR;
 using C = ETicaretAPI.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace ETicaretAPI.Application.Features.Commands.Customer.RemoveCustomer
 {
@@ -13,11 +14,13 @@ namespace ETicaretAPI.Application.Features.Commands.Customer.RemoveCustomer
     {
         readonly private ICustomerReadRepository _customerReadRepository;
         readonly private ICustomerWriteRepository _customerWriteRepository;
+        readonly ILogger<RemoveCustomerCommandHandler> _logger;
 
-        public RemoveCustomerCommandHandler(ICustomerReadRepository customerReadRepository, ICustomerWriteRepository customerWriteRepository)
+        public RemoveCustomerCommandHandler(ICustomerReadRepository customerReadRepository, ICustomerWriteRepository customerWriteRepository, ILogger<RemoveCustomerCommandHandler> logger)
         {
             _customerReadRepository = customerReadRepository;
             _customerWriteRepository = customerWriteRepository;
+            _logger = logger;
         }
 
         public async Task<RemoveCustomerCommandResponse> Handle(RemoveCustomerCommandRequest request, CancellationToken cancellationToken)
@@ -25,6 +28,7 @@ namespace ETicaretAPI.Application.Features.Commands.Customer.RemoveCustomer
             C.Customer customer = await _customerReadRepository.GetByIdAsync(request.Id, false);
             if (customer == null)
             {
+                _logger.LogError($"Müşteri bulunamadı, ID: {request.Id}");
                 return new()
                 {
                     Succeeded = false,
@@ -35,6 +39,7 @@ namespace ETicaretAPI.Application.Features.Commands.Customer.RemoveCustomer
             {
                 _customerWriteRepository.Remove(customer);
                 await _customerWriteRepository.SaveAsync();
+                _logger.LogInformation($"Müşteri silindi, ID: {request.Id}");
                 return new()
                 {
                     Succeeded = true,

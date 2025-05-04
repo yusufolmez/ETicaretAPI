@@ -8,12 +8,14 @@ using ETicaretAPI.Application.DTOs.User;
 using ETicaretAPI.Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace ETicaretAPI.Application.Features.Commands.AppUser.CreateUser
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
     {
         readonly IUserService _userService;
+        readonly ILogger<CreateUserCommandHandler> _logger;
 
         public CreateUserCommandHandler(IUserService userService)
         {
@@ -30,6 +32,7 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.CreateUser
                 PasswordConfirm = request.PasswordConfirm,
                 Username = request.Username,
             });
+            _logger?.LogInformation($"Kullanici olusturuldu, Email: {request.Email}");
 
             return new()
             {

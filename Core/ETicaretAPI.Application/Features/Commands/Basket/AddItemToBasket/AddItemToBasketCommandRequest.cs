@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
 
-namespace ETicaretAPI.Application.ViewModels.Baskets
+namespace ETicaretAPI.Application.Features.Commands.Basket.AddItemToBasket
 {
-    public class VM_Create_BasketItem
+    public class AddItemToBasketCommandRequest : IRequest<AddItemToBasketCommandResponse>
     {
         public string ProductId { get; set; }
         public int Quantity { get; set; }

@@ -62,19 +62,19 @@ namespace ETicaretAPI.Persistance.Services
             }
             throw new Exception("Beklenmeyen bir hatayla karsilasildi...");
         }
-        public async Task AddItemToBasketAsyn(VM_Create_BasketItem basketItem)
+        public async Task AddItemToBasketAsync(VM_Create_BasketItem basketItem)
         {
             Basket? basket = await ContextUser();
             if (basket != null)
             {
-                BasketItem _basketItem = await _basketItemReadRepository.GetSingleAsync(bi => bi.BasketId == basket.Id && bi.ProductId == Guid.Parse(basketItem.ProductID));
+                BasketItem _basketItem = await _basketItemReadRepository.GetSingleAsync(bi => bi.BasketId == basket.Id && bi.ProductId == Guid.Parse(basketItem.ProductId));
                 if (_basketItem != null)
                     _basketItem.Quantity++;
                 else
                     await _basketItemWriteRepository.AddAsync(new()
                     {
                         BasketId = basket.Id,
-                        ProductId = Guid.Parse(basketItem.ProductID),
+                        ProductId = Guid.Parse(basketItem.ProductId),
                         Quantity = basketItem.Quantity
                     });
                 await _basketItemWriteRepository.SaveAsync();

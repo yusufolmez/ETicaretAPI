@@ -117,7 +117,7 @@ namespace ETicaretAPI.Persistance.Services
             if (result.Succeeded)
             {
                 TokenDTO token = _tokenHandler.CreateAccessToken(accessTokenLifeTime, user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration.ToUniversalTime(), 150);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration.ToUniversalTime(), 15);
                 return token;
             }
             throw new AuthenticationErrorException();
@@ -128,7 +128,7 @@ namespace ETicaretAPI.Persistance.Services
             if (user != null && user?.RefreshTokenEndDate > DateTime.UtcNow)
             {
                 TokenDTO token = _tokenHandler.CreateAccessToken(15, user);
-                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration.ToUniversalTime(), 150);
+                await _userService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration.ToUniversalTime(), 300);
                 return token;
             }
             else

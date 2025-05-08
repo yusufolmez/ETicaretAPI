@@ -27,7 +27,7 @@ namespace ETicaretAPI.Application.Features.Queries.Customer.GetAllCustomer
             {
                 c.Id,
                 c.Name,
-                c.Orders
+                //c.Orders
             }).ToList();
 
             _logger.LogInformation($"Tüm müşteriler listelendi, Toplam Sayı: {totalCount}");

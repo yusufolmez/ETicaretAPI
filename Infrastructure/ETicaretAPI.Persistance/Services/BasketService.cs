@@ -115,5 +115,14 @@ namespace ETicaretAPI.Persistance.Services
             else
                 throw new Exception("Guncellenecek sepet elemani bulunamadi.");
         }
+
+        public Basket? GetUserActiveBasketAsync
+        {
+            get
+            {
+                Basket? basket = ContextUser().Result;
+                return basket;
+            }
+        }
     }
 }

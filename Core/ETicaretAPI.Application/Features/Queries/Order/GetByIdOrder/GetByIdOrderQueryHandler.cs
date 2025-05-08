@@ -27,7 +27,7 @@ namespace ETicaretAPI.Application.Features.Queries.Order.GetByIdOrder
             _logger.LogInformation($"Sipariş bilgileri alındı, ID: {request.Id}");
             return new()
             {
-                CustomerId = order.CustomerId,
+                //CustomerId = order.CustomerId,
                 Address = order.Address,
                 Description = order.Description
             };

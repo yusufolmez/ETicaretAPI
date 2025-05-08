@@ -27,8 +27,8 @@ namespace ETicaretAPI.Application.Features.Queries.Order.GetAllOrder
             {
                 o.Id,
                 o.Description,
-                o.Products,
-                o.CustomerId
+                //o.Products,
+                //o.CustomerId
 
             }).ToList();
 

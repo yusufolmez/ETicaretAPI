@@ -21,6 +21,12 @@ namespace ETicaretAPI.API.Controllers
         {
             _mediator = mediator;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrders([FromQuery] GetAllOrdersQueryRequest getAllOrderQueryRequest)
+        {
+            GetAllOrdersQueryResponse response = await _mediator.Send(getAllOrderQueryRequest);
+            return Ok(response);
+        }
         [HttpPost]
         public async Task<IActionResult> CreateOrder(CreateOrderCommandRequest createOrderCommandRequest)
         {

@@ -8,35 +8,26 @@ using ETicaretAPI.Application.Repositories;
 using MediatR;
 using O = ETicaretAPI.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using ETicaretAPI.Application.Abstractions.Services;
 
 namespace ETicaretAPI.Application.Features.Queries.Order.GetAllOrder
 {
     public class GetAllOrdersQueryhandler : IRequestHandler<GetAllOrdersQueryRequest, GetAllOrdersQueryResponse>
     {
-        readonly IOrderReadRepository _orderReadRepository;
-        readonly ILogger<GetAllOrdersQueryhandler> _logger;
-        public GetAllOrdersQueryhandler(IOrderReadRepository orderReadRepository, ILogger<GetAllOrdersQueryhandler> logger)
+        readonly IOrderService _orderService;
+
+        public GetAllOrdersQueryhandler(IOrderService orderService)
         {
-            _orderReadRepository = orderReadRepository;
-            _logger = logger;
+            _orderService = orderService;
         }
+
         public async Task<GetAllOrdersQueryResponse> Handle(GetAllOrdersQueryRequest request, CancellationToken cancellationToken)
         {
-            var totalCount = _orderReadRepository.GetAll(false).Count();
-            var orders = _orderReadRepository.GetAll(false).Skip(request.Pagination.Page * request.Pagination.Size).Take(request.Pagination.Size).Select(o => new
-            {
-                o.Id,
-                o.Description,
-                //o.Products,
-                //o.CustomerId
-
-            }).ToList();
-
-            _logger.LogInformation($"Tüm siparişler listelendi, Toplam Sayı: {totalCount}");
+            var data = await _orderService.GetAllOrdersAsync(request.Pagination.Page, request.Pagination.Size);
             return new()
             {
-                TotalCount = 0,
-                Orders = orders
+                TotalOrderCount = data.TotalOrderCount,
+                Orders = data.Orders
             };
         }
     }

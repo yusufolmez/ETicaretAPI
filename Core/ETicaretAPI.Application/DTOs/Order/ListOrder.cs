@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.Features.Queries.Order.GetAllOrder
+namespace ETicaretAPI.Application.DTOs.Order
 {
-    public class GetAllOrdersQueryResponse
+    public class ListOrder
     {
         public int TotalOrderCount { get; set; }
         public object Orders { get; set; }

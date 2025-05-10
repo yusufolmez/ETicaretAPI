@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.Features.Queries.Order.GetByIdOrder
+namespace ETicaretAPI.Application.DTOs.Order
 {
-    public class GetByIdOrderQueryResponse
+    public class SingleOrder
     {
         public string Address { get; set; }
         public object BasketItems { get; set; }

@@ -7,29 +7,30 @@ using ETicaretAPI.Application.Repositories;
 using MediatR;
 using O = ETicaretAPI.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using ETicaretAPI.Application.Abstractions.Services;
 
 namespace ETicaretAPI.Application.Features.Queries.Order.GetByIdOrder
 {
     public class GetByIdOrderQueryHandler : IRequestHandler<GetByIdOrderQueryRequest, GetByIdOrderQueryResponse>
     {
-        readonly IOrderReadRepository _orderReadRepository;
-        readonly ILogger<GetByIdOrderQueryHandler> _logger;
+        readonly IOrderService _orderService;
 
-        public GetByIdOrderQueryHandler(IOrderReadRepository orderReadRepository, ILogger<GetByIdOrderQueryHandler> logger)
+        public GetByIdOrderQueryHandler(IOrderService orderService)
         {
-            _orderReadRepository = orderReadRepository;
-            _logger = logger;
+            _orderService = orderService;
         }
 
         public async Task<GetByIdOrderQueryResponse> Handle(GetByIdOrderQueryRequest request, CancellationToken cancellationToken)
         {
-            O.Order order = await _orderReadRepository.GetByIdAsync(request.Id, false);
-            _logger.LogInformation($"Sipariş bilgileri alındı, ID: {request.Id}");
+            var data = await _orderService.GetOrderByIdAsync(request.Id);
             return new()
             {
-                //CustomerId = order.CustomerId,
-                Address = order.Address,
-                Description = order.Description
+                Id = data.Id,
+                OrderCode = data.OrderCode,
+                Address = data.Address,
+                BasketItems = data.BasketItems,
+                CreatedDate = data.CreatedDate,
+                Description = data.Description
             };
         }
     }
